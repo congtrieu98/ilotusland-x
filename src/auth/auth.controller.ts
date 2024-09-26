@@ -20,7 +20,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('login')
     signIn(@Body() signInDto: UserCreateDto) {
-        return this.authService.signIn(signInDto.email);
+        return this.authService.signIn(signInDto);
     }
 
     @UseGuards(AuthGuard)

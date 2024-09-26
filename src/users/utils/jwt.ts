@@ -11,7 +11,9 @@ export const signToken = ({
 }) => {
     return new Promise<string>((resolve) => {
         const jwtService = new JwtService();
-        const token = jwtService.signAsync(payload as object, { secret: process.env.JWT_SECRET, privateKey: privateKey } )
+        const token = jwtService.signAsync(payload as object, { secret: process.env.JWT_SECRET, privateKey: privateKey })
+        console.log('token:', token);
+
         return resolve(token)
     })
 }
