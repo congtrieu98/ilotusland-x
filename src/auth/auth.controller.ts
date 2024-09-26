@@ -20,7 +20,6 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('login')
     signIn(@Body() signInDto: UserCreateDto) {
-        console.log("secret:", process.env.JWT_SECRET)
         return this.authService.signIn(signInDto.email);
     }
 
