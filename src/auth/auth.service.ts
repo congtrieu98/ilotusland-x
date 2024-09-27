@@ -35,22 +35,19 @@ export class AuthService {
     async signIn(signInDto: UserCreateDto) {
         const user = await this.usersService.getUserByEmail(signInDto.email);
         const hashPassword = await decodePassword(signInDto.password, user.data.password)
-        console.log("user:", user)
-        console.log("hashPassword:", hashPassword)
+        // console.log("user:", user)
+        // console.log("hashPassword:", hashPassword)
         if (!user || !(hashPassword)) {
             throw new UnauthorizedException('Email or password is incorrect');
         }
 
         const payload = { sub: user.data.id, email: user.data.email };
-        // const user_id = user.data.id
         const privateKey = user.data.keys[0].private_key
         const publicKey = user.data.keys[0].public_key
         const [access_token, refresh_token] = await Promise.all([
             this.signAccessToken(payload, publicKey),
             this.signRefreshToken(payload, privateKey)
         ])
-        // const access_token = await this.jwtService.signAsync(payload, { secret: process.env.JWT_SECRET, privateKey: publicKey })
-        // const refresh_token = await this.jwtService.signAsync(payload, { secret: process.env.JWT_SECRET, privateKey: privateKey }
 
         return {
             code: 201,
