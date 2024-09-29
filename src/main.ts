@@ -1,17 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import "reflect-metadata"
 
-declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   await app.listen(5000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 
-  if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => app.close());
-  }
 }
 bootstrap();
