@@ -12,18 +12,10 @@ export class Application {
     @Column("simple-array")
     redirect_uris: string
 
-    @Column()
-    scope: string
-
-    @Column()
-    grant_types: string
-
-    @Column()
-    response_type: string
-
-    @Column()
+    @Column({ default: () => 'CURRENT_TIMESTAMPTZ', type: 'timestamp with time zone' })
     created_at: Date
 
-    @Column()
+    @Column({ default: () => 'CURRENT_TIMESTAMPTZ', type: 'timestamp with time zone' })
     updated_at: Date
+
 }

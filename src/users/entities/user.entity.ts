@@ -1,25 +1,24 @@
 /* eslint-disable prettier/prettier */
-import { Application } from 'src/applications/entities/application.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+// import { Application } from 'src/applications/entities/application.entity';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    @Column({ unique: true })
     email: string;
 
     @Column()
     password: string;
-
-    @Column()
+    @Column({ default: () => 'CURRENT_TIMESTAMP', type: 'timestamp with time zone' })
     created_at: Date
 
-    @Column()
+    @Column({ default: () => 'CURRENT_TIMESTAMP', type: 'timestamp with time zone' })
     updated_at: Date
 
-    @OneToOne(() => Application)
-    @JoinColumn()
-    client: Application
+    // @OneToOne(() => Application)
+    // @JoinColumn()
+    // client: Application
 }

@@ -1,16 +1,35 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
-// import { createClient, SupabaseClient } from '@supabase/supabase-js';
-// import { UserCreateDto } from './dtos/user-create.dto';
+import { HttpException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { UserCreateDto } from './dtos/user-create.dto';
 // import * as crypto from 'crypto';
-// import { hashPassword } from './utils/crypto';
+import { hashPassword } from './utils/crypto';
 
 @Injectable()
 export class UsersService {
-    // private supabaseClient: SupabaseClient
-    // constructor() {
-    //     this.supabaseClient = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY)
-    // }
+    constructor(
+        @InjectRepository(User)
+        private userRepository: Repository<User>,
+    ) { }
+
+    async create(userCreate: UserCreateDto) {
+        console.log("userCreate:", userCreate)
+        try {
+            const { email, password, clientId } = userCreate
+            const payload = {
+                email,
+                password: await hashPassword(password),
+                clientId
+            }
+            const newUserRepo = this.userRepository.create(payload)
+            return await this.userRepository.save(newUserRepo);
+
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 
     // async createUser(userCreate: UserCreateDto) {
     //     try {
@@ -55,23 +74,15 @@ export class UsersService {
     //     }
     // }
 
-    // async getUserByEmail(email: string) {
-    //     try {
-    //         const { data, error } = await this.supabaseClient
-    //             .from('users')
-    //             .select(`id, email, password, keys(*)`)
-    //             .eq('email', email)
-    //             .single()
-
-    //         if (error) {
-    //             return { error }
-    //         }
-
-    //         return {
-    //             data
-    //         }
-    //     } catch (error) {
-    //         throw Error(error)
-    //     }
-    // }
+    async getUserByEmail(email: string) {
+        try {
+            const user = await this.userRepository.findOne({ where: { email } });
+            if (user) {
+                return user;
+            }
+            throw new HttpException('Not found user', 404);
+        } catch (error) {
+            throw Error(error.message)
+        }
+    }
 }

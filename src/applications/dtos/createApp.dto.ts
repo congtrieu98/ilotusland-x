@@ -3,6 +3,6 @@ export class CreateAppDto {
     client_secret: string
     redirect_uris: string[]
     scope: string
-    grant_type: string
+    grant_types: string
     response_type: string
 }

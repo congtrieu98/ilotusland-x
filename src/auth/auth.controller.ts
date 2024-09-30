@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import {
-    // Body,
+    Body,
     Controller,
     Get,
     HttpCode,
@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
-// import { UserCreateDto } from 'src/users/dtos/user-create.dto';
+import { LoginDto } from './dtos/login-dto';
 
 @Controller('auth')
 export class AuthController {
@@ -19,9 +19,9 @@ export class AuthController {
 
     @HttpCode(HttpStatus.OK)
     @Post('login')
-    // signIn(@Body() signInDto: UserCreateDto) {
-    //     return this.authService.signIn(signInDto);
-    // }
+    signIn(@Body() signInDto: LoginDto) {
+        return this.authService.signIn(signInDto);
+    }
 
     @UseGuards(AuthGuard)
     @Get('profile')

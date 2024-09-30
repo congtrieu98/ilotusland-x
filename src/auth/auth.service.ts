@@ -1,10 +1,11 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { TokenType } from 'src/users/contants/enum';
-// import { UserCreateDto } from 'src/users/dtos/user-create.dto';
 // import { TokenType } from 'src/users/contants/enum';
 import { UsersService } from 'src/users/users.service';
+import { decodePassword } from 'src/users/utils/crypto';
+import { LoginDto } from './dtos/login-dto';
 // import { decodePassword } from 'src/users/utils/crypto';
 // import { signToken } from 'src/users/utils/jwt';
 // import { signToken } from 'src/users/utils/jwt';
@@ -32,7 +33,24 @@ export class AuthService {
         return refresh_token
     }
 
-    // async signIn(signInDto: UserCreateDto) {
+    async signIn(signInDto: LoginDto) {
+        const user = await this.usersService.getUserByEmail(signInDto.email);
+
+        const hashPassword = await decodePassword(signInDto.password, user.password)
+        if (!user || !hashPassword) {
+            throw new UnauthorizedException('Email or password is incorrect');
+        }
+
+        // Gen challege code
+
+        return user
+    }
+
+    async generateChallegeCode() {
+
+    }
+
+    // async signIn(c) {
     //     const user = await this.usersService.getUserByEmail(signInDto.email);
     //     const hashPassword = await decodePassword(signInDto.password, user.data.password)
     //     // console.log("user:", user)
