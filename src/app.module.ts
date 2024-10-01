@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 // import { User } from './users/entities/user.entity';
 import { ApplicationsModule } from './applications/applications.module';
+import { OauthModule } from './oauth/oauth.module';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { ApplicationsModule } from './applications/applications.module';
       }),
       inject: [ConfigService],
     }),
-    UsersModule, AuthModule, ApplicationsModule
+    UsersModule, AuthModule, ApplicationsModule, OauthModule
   ],
   controllers: [AppController],
   providers: [AppService],

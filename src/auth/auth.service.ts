@@ -5,7 +5,7 @@ import { TokenType } from 'src/users/contants/enum';
 // import { TokenType } from 'src/users/contants/enum';
 import { UsersService } from 'src/users/users.service';
 import { decodePassword } from 'src/users/utils/crypto';
-import { LoginDto } from './dtos/login-dto';
+// import { LoginDto } from './dtos/login-dto';
 // import { decodePassword } from 'src/users/utils/crypto';
 // import { signToken } from 'src/users/utils/jwt';
 // import { signToken } from 'src/users/utils/jwt';
@@ -33,10 +33,11 @@ export class AuthService {
         return refresh_token
     }
 
-    async signIn(signInDto: LoginDto) {
-        const user = await this.usersService.getUserByEmail(signInDto.email);
+    async verifyUser(email: string, password: string) {
+        // console.log("signDt:", signInDto)
+        const user = await this.usersService.getUserByEmail(email);
 
-        const hashPassword = await decodePassword(signInDto.password, user.password)
+        const hashPassword = await decodePassword(password, user.password)
         if (!user || !hashPassword) {
             throw new UnauthorizedException('Email or password is incorrect');
         }
@@ -46,8 +47,8 @@ export class AuthService {
         return user
     }
 
-    async generateChallegeCode() {
-
+    async generateCodeChallenge() {
+        
     }
 
     // async signIn(c) {

@@ -1,27 +1,27 @@
 /* eslint-disable prettier/prettier */
 import {
-    Body,
+    // Body,
     Controller,
     Get,
-    HttpCode,
-    HttpStatus,
-    Post,
+    // HttpCode,
+    // HttpStatus,
+    // Post,
     Request,
     UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dtos/login-dto';
+// import { LoginDto } from './dtos/login-dto';
 
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) { }
 
-    @HttpCode(HttpStatus.OK)
-    @Post('login')
-    signIn(@Body() signInDto: LoginDto) {
-        return this.authService.signIn(signInDto);
-    }
+    // @HttpCode(HttpStatus.OK)
+    // @Post('login')
+    // signIn(@Body() signInDto: LoginDto) {
+    //     return this.authService.signIn(signInDto);
+    // }
 
     @UseGuards(AuthGuard)
     @Get('profile')
