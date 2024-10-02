@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Application } from './entities/application.entity';
 import { Repository } from 'typeorm';
@@ -20,5 +20,19 @@ export class ApplicationsService {
             client_secret: crypto.randomBytes(16).toString('hex')
         });
         return await this.applicationRepository.save(newApplicationRepo);
+    }
+
+    async validateClient(clientId: string) {
+        console.log('clientId:', clientId)
+        try {
+            const client = await this.applicationRepository.findOne({ where: { id: clientId } });
+            console.log('client:', client)
+            if (client) {
+                return client;
+            }
+            throw new HttpException('Not found client', 404);
+        } catch (error) {
+            throw Error(error.message)
+        }
     }
 }

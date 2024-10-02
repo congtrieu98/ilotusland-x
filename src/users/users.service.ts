@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserCreateDto } from './dtos/user-create.dto';
 // import * as crypto from 'crypto';
-import { hashPassword } from './utils/crypto';
+import { decodePassword, hashPassword } from './utils/crypto';
 
 @Injectable()
 export class UsersService {
@@ -73,6 +73,18 @@ export class UsersService {
     //         throw new Error(error);
     //     }
     // }
+
+
+    async verifyUser(email: string, password: string) {
+        // console.log("signDt:", signInDto)
+        const user = await this.getUserByEmail(email);
+
+        const hashPassword = await decodePassword(password, user.password)
+        if (!user || !hashPassword) {
+            throw new UnauthorizedException('Email or password is incorrect');
+        }
+        return user
+    }
 
     async getUserByEmail(email: string) {
         try {

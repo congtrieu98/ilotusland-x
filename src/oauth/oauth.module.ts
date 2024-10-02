@@ -1,17 +1,23 @@
-/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { OauthController } from './oauth.controller';
 import { OauthService } from './oauth.service';
-// import { UsersModule } from 'src/users/users.module';
-// import { JwtModule } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Application } from 'src/applications/entities/application.entity';
+import { AuthorizeCode } from './entities/authorizeCode.entity';
+import { ApplicationsService } from 'src/applications/applications.service';
+
+import { AuthModule } from 'src/auth/auth.module';
+import { ApplicationsModule } from 'src/applications/applications.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Application])],
+  imports: [
+    TypeOrmModule.forFeature([AuthorizeCode]),
+    UsersModule,
+    AuthModule,
+    ApplicationsModule,
+  ],
   controllers: [OauthController],
-    providers: [OauthService, UsersService],
-    exports: [OauthService]
+  providers: [OauthService, ApplicationsService],
+  exports: [OauthService],
 })
 export class OauthModule {}

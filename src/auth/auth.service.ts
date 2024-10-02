@@ -1,10 +1,9 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { TokenType } from 'src/users/contants/enum';
 // import { TokenType } from 'src/users/contants/enum';
 import { UsersService } from 'src/users/users.service';
-import { decodePassword } from 'src/users/utils/crypto';
 // import { LoginDto } from './dtos/login-dto';
 // import { decodePassword } from 'src/users/utils/crypto';
 // import { signToken } from 'src/users/utils/jwt';
@@ -31,20 +30,6 @@ export class AuthService {
             { secret: process.env.JWT_SECRET, privateKey: privateKey }
         )
         return refresh_token
-    }
-
-    async verifyUser(email: string, password: string) {
-        // console.log("signDt:", signInDto)
-        const user = await this.usersService.getUserByEmail(email);
-
-        const hashPassword = await decodePassword(password, user.password)
-        if (!user || !hashPassword) {
-            throw new UnauthorizedException('Email or password is incorrect');
-        }
-
-        // Gen challege code
-
-        return user
     }
 
     async generateCodeChallenge() {

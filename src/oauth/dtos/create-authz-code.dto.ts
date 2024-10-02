@@ -1,12 +1,13 @@
 /* eslint-disable prettier/prettier */
 export class CreateAuthzCode {
-    responseType: string
-    clientId: string
-    redirectUri: string[]
-    codeChallenge: string
-    codeChallengeMethod: string
+    response_type: string
+    client_id: string
+    redirect_uri: string
+    code_challenge: string
+    code_challenge_method: string
     email: string
     password: string
-    userId: string
+    user_id: string
     scope?: string
+    state: string
 }

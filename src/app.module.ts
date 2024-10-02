@@ -1,7 +1,4 @@
-/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
@@ -12,19 +9,21 @@ import { OauthModule } from './oauth/oauth.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: () => ({
+      useFactory: (ConfigService: ConfigService) => ({
         type: 'postgres',
-        url: 'postgresql://postgres.llvqwsuzbhihswgqmhjo:iLotusLand-X@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres',
+        url: ConfigService.get('SUPABASE_DATABASE'),
         autoLoadEntities: true,
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
-    UsersModule, AuthModule, ApplicationsModule, OauthModule
+    UsersModule,
+    AuthModule,
+    ApplicationsModule,
+    OauthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

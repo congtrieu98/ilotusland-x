@@ -1,62 +1,65 @@
-/* eslint-disable prettier/prettier */
-import { Controller, HttpCode, HttpException, HttpStatus, Post, UnauthorizedException } from '@nestjs/common';
-// import { LoginDto } from 'src/auth/dtos/login-dto';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { OauthService } from './oauth.service';
-// import { Response } from 'express';
-// import { UsersService } from 'src/users/users.service';
-import { AuthService } from 'src/auth/auth.service';
 import { CreateAuthzCode } from './dtos/create-authz-code.dto';
+import { ApplicationsService } from 'src/applications/applications.service';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('oauth')
 export class OauthController {
-    constructor(
-        private oauthService: OauthService,
-        private authService: AuthService
-    ) { }
+  constructor(
+    private applicationService: ApplicationsService,
+    private oauthService: OauthService,
+    private userService: UsersService,
+  ) {}
 
-    @HttpCode(HttpStatus.OK)
-    // @Post('authorize')
-    // authorize(@Body() signInDto: LoginDto) {
-    //     return this.oauthService.authorize(signInDto);
-    // }
-    @Post('authorize')
-    async authorize(
-        // @Body('response_type') responseType: string,
-        // @Body('client_id') clientId: string,
-        // @Body('redirect_uri') redirectUri: string,
-        // @Body('scope') scope: string,
-        // @Body('code_challenge') codeChallenge: string,
-        // @Body('code_challenge_method') codeChallengeMethod: string,
-        // @Body('email') email: string,
-        // @Body('password') password: string,
-        createAuthzCode: CreateAuthzCode,
-        // @Res() res: Response,
-        // @Req() req: Request,
-    ) {
-        if (createAuthzCode.responseType !== 'code') {
-            throw new UnauthorizedException('Unsupported response type');
-        }
-
-        const client = await this.oauthService.validateClient(createAuthzCode.clientId);
-        if (!client) {
-            throw new UnauthorizedException('Invalid client');
-        }
-
-
-        const user = await this.authService.verifyUser(createAuthzCode.email, createAuthzCode.password);
-
-        if (!user) {
-            throw new HttpException('Not found user', 404);
-        }
-
-
-        // const authorizationCode = 
-        await this.oauthService.createAuthorizationCode(createAuthzCode);
-
-        // Chuyển hướng với authorization code
-        // const redirectUrl = new URL(createAuthzCode.redirectUri[0]);
-        // redirectUrl.searchParams.append('code', authorizationCode.code);
-
-        // res.redirect(redirectUrl.toString());
+  @HttpCode(HttpStatus.OK)
+  @Post('authorize')
+  async authorize(@Body() createAuthzCode: CreateAuthzCode) {
+    console.log('createAuthzCode:', createAuthzCode);
+    if (createAuthzCode.response_type !== 'code') {
+      throw new UnauthorizedException('Unsupported response type');
     }
+
+    const client = await this.applicationService.validateClient(
+      createAuthzCode.client_id,
+    );
+    if (!client) {
+      throw new UnauthorizedException('Invalid client');
+    }
+
+    const user = await this.userService.verifyUser(
+      createAuthzCode.email,
+      createAuthzCode.password,
+    );
+
+    if (!user) {
+      throw new HttpException('Not found user', 404);
+    }
+
+    const authorizationCode = await this.oauthService.createAuthorizationCode({
+      ...createAuthzCode,
+      user_id: user.id,
+      redirect_uri: createAuthzCode.redirect_uri,
+    });
+    const url = createAuthzCode.redirect_uri;
+    if (createAuthzCode.state) {
+      const redirectUrl = new URL(url);
+      redirectUrl.searchParams.append('code', authorizationCode.code);
+      return redirectUrl.toString();
+    }
+  }
+
+  // @HttpCode(HttpStatus.OK)
+  // @Post('token')
+  // async getToken(@Body() ) {
+
+  // }
 }
